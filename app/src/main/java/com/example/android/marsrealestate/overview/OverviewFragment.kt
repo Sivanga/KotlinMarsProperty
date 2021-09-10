@@ -18,9 +18,13 @@
 package com.example.android.marsrealestate.overview
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.example.android.marsrealestate.R
 import com.example.android.marsrealestate.databinding.FragmentOverviewBinding
 import com.example.android.marsrealestate.databinding.GridViewItemBinding
@@ -51,7 +55,18 @@ class OverviewFragment : Fragment() {
         // Giving the binding access to the OverviewViewModel
         binding.viewModel = viewModel
 
-        binding.listItems.adapter = PhotoGridAdapter()
+        binding.listItems.adapter = PhotoGridAdapter(PhotoGridAdapter.OnClickListener
+        {
+            viewModel.navigateToDetailsScreen(it)
+        })
+
+        viewModel.navigateToSelectedProperty.observe(viewLifecycleOwner, Observer {
+            if (null != it) {
+                Log.d("sivan", it.toString())
+                findNavController().navigate(OverviewFragmentDirections.actionShowDetail(it))
+                viewModel.doneNavigateToDetailsScreen()
+            }
+        })
 
         setHasOptionsMenu(true)
         return binding.root
